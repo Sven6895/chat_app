@@ -1,0 +1,278 @@
+/* --- Game-Themed Dark Mode CSS --- */
+
+:root {
+  /* Colors provided from your game's style guide */
+  --bg-ic-light-green: #1f7f6b;
+  --bg-ic-dark-blue: #0c2735;
+  --bg-ic-red: #b23939;
+  --bg-ic-green: #218b73;
+
+  /* Neutral colors derived for the theme */
+  --ic-text-primary: #e4e6eb;
+  --ic-text-secondary: #a8b3cf;
+  --ic-border: #1a4e63; /* A complementary border color */
+  --ic-surface: #10384f; /* A slightly lighter surface for UI elements */
+  --ic-surface-hover: #174d69;
+}
+
+body {
+  margin: 0;
+  font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
+  background-color: var(--bg-ic-dark-blue);
+  color: var(--ic-text-primary);
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 1400px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--bg-ic-dark-blue);
+  border-radius: 8px;
+  border: 1px solid var(--ic-border);
+  margin-top: 40px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.app-header h1,
+.channel-btn,
+.search-input,
+.time-input,
+.search-btn,
+.clear-btn,
+.jump-btn,
+.load-more-btn {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  color: var(--bg-ic-green);
+}
+
+.search-forms-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.search-bar,
+.time-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input,
+.time-input {
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 20px;
+  background-color: var(--ic-surface);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-text-primary);
+}
+
+.time-input {
+  padding: 8px 10px;
+  color-scheme: dark;
+}
+
+.search-input::placeholder {
+  color: var(--ic-text-secondary);
+}
+
+.search-btn,
+.clear-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-btn {
+  background-color: var(--bg-ic-green);
+  color: white;
+}
+
+.clear-btn {
+  background-color: var(--ic-surface);
+  color: var(--ic-text-primary);
+}
+
+.channel-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  border-bottom: 1px solid var(--ic-border);
+  padding-bottom: 20px;
+}
+
+.channel-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--ic-border);
+  background-color: var(--ic-surface);
+  color: var(--ic-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.clear-btn:hover,
+.channel-btn:hover {
+  background-color: var(--ic-surface-hover);
+}
+
+.search-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.channel-btn.active {
+  background-color: var(--bg-ic-green);
+  color: #ffffff;
+  border-color: var(--bg-ic-green);
+}
+
+.chat-log {
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-top: 20px;
+}
+
+.chat-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--ic-border);
+}
+
+.message-content {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.username {
+  color: var(--bg-ic-light-green);
+  font-weight: bold;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.username:hover {
+  text-decoration: underline;
+  filter: brightness(1.2);
+}
+
+.timestamp {
+  color: var(--ic-text-secondary);
+  flex-shrink: 0;
+}
+.channel-name {
+  color: var(--bg-ic-green);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.message-body {
+  margin: 0;
+  padding: 0;
+  word-break: break-word;
+}
+.message-actions {
+  flex-shrink: 0;
+  padding-left: 15px;
+}
+
+.jump-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+  background-color: var(--ic-surface);
+  border: 1px solid var(--ic-border);
+  color: var(--ic-text-primary);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.jump-btn:hover {
+  background-color: var(--ic-surface-hover);
+}
+
+.load-more-container {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.load-more-btn {
+  background-color: var(--ic-surface);
+  color: var(--ic-text-primary);
+  border: 1px solid var(--ic-border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  background-color: var(--ic-surface-hover);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: var(--bg-ic-red);
+  text-align: center;
+  padding: 20px;
+  font-weight: bold;
+}
+
+@keyframes flash {
+  0% {
+    background-color: rgba(33, 139, 115, 0.5);
+  } /* Flash with the game's green color */
+  100% {
+    background-color: transparent;
+  }
+}
+
+.highlighted-message {
+  animation: flash 2s ease-out;
+}

@@ -1,6 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useMemo } from "react";
 import "./App.css";
 
+// Define the base URL for your FastAPI backend
+const API_BASE_URL = "http://localhost:8000"; // Changed to an absolute URL
+
 function App() {
   const [messages, setMessages] = useState(new Map());
   const [channels, setChannels] = useState([]);
@@ -8,8 +11,10 @@ function App() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeSearch, setActiveSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // For username search
+  const [messageSearchTerm, setMessageSearchTerm] = useState(""); // New state for message text search
+  const [activeSearch, setActiveSearch] = useState(""); // Currently active username search
+  const [activeMessageSearch, setActiveMessageSearch] = useState(""); // New state for active message text search
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [canLoadNewer, setCanLoadNewer] = useState(false);
   const [canLoadOlder, setCanLoadOlder] = useState(true);
@@ -25,7 +30,7 @@ function App() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await fetch("/api/channels");
+        const response = await fetch(`${API_BASE_URL}/channels`); // Modified
         if (!response.ok) throw new Error("Could not fetch channels");
         const data = await response.json();
 
@@ -68,9 +73,13 @@ function App() {
       const params = new URLSearchParams();
       if (activeChannel !== "All") params.append("channel_name", activeChannel);
       if (activeSearch) params.append("username", activeSearch);
+      if (activeMessageSearch)
+        params.append("message_text", activeMessageSearch);
 
       const queryString = params.toString();
-      let url = `/api/messages${queryString ? `?${queryString}` : ""}`;
+      let url = `${API_BASE_URL}/messages${
+        queryString ? `?${queryString}` : ""
+      }`; // Modified
 
       try {
         const response = await fetch(url);
@@ -85,7 +94,7 @@ function App() {
     };
 
     fetchInitialMessages();
-  }, [activeChannel, activeSearch]);
+  }, [activeChannel, activeSearch, activeMessageSearch]);
 
   useLayoutEffect(() => {
     if (scrollAnchor?.id) {
@@ -110,15 +119,29 @@ function App() {
     }
   }, [messages, highlightedMessageId]);
 
-  const handleSearchSubmit = (e) => {
+  const handleUsernameSearchSubmit = (e) => {
     e.preventDefault();
     setActiveChannel("All");
     setActiveSearch(searchTerm);
+    setActiveMessageSearch("");
+    setMessageSearchTerm("");
   };
+
+  const handleMessageSearchSubmit = (e) => {
+    e.preventDefault();
+    setActiveChannel("All");
+    setActiveMessageSearch(messageSearchTerm);
+    setActiveSearch("");
+    setSearchTerm("");
+  };
+
   const clearSearch = () => {
     setSearchTerm("");
     setActiveSearch("");
+    setMessageSearchTerm("");
+    setActiveMessageSearch("");
   };
+
   const formatDate = (d) =>
     new Date(d).toLocaleDateString(undefined, {
       month: "short",
@@ -131,8 +154,13 @@ function App() {
       second: "2-digit",
       hour12: false,
     });
+
   const handleUsernameClick = (username) => {
     setSearchTerm(username);
+    setActiveSearch(username);
+    setActiveMessageSearch("");
+    setMessageSearchTerm("");
+    setActiveChannel("All");
   };
 
   const handleJumpToTime = async (timestamp, messageId, channelName) => {
@@ -140,6 +168,8 @@ function App() {
     setError(null);
     setActiveSearch("");
     setSearchTerm("");
+    setActiveMessageSearch("");
+    setMessageSearchTerm("");
     setHighlightedMessageId(messageId);
     setActiveChannel(channelName);
     setCanLoadNewer(true);
@@ -150,7 +180,7 @@ function App() {
       params.append("target_timestamp", timestamp);
       params.append("channel_name", channelName);
 
-      const url = `/api/messages_around_time?${params.toString()}`;
+      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified
       const response = await fetch(url);
       const data = await response.json();
       setMessages(new Map(data.map((msg) => [msg.id, msg])));
@@ -170,6 +200,8 @@ function App() {
     setError(null);
     setActiveSearch("");
     setSearchTerm("");
+    setActiveMessageSearch("");
+    setMessageSearchTerm("");
     setHighlightedMessageId(null);
     setCanLoadNewer(true);
     setCanLoadOlder(true);
@@ -185,8 +217,7 @@ function App() {
         params.append("channel_name", activeChannel);
       }
 
-      // --- MODIFIED URL ---
-      const url = `/api/messages_around_time?${params.toString()}`;
+      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified
 
       const response = await fetch(url);
       if (!response.ok)
@@ -221,9 +252,9 @@ function App() {
     params.append("before_timestamp", oldestTimestamp);
     if (activeChannel !== "All") params.append("channel_name", activeChannel);
     if (activeSearch) params.append("username", activeSearch);
+    if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    // --- MODIFIED URL ---
-    const url = `/api/messages?${params.toString()}`;
+    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified
     const response = await fetch(url);
     const olderMessages = await response.json();
 
@@ -245,8 +276,9 @@ function App() {
     params.append("after_timestamp", newestTimestamp);
     if (activeChannel !== "All") params.append("channel_name", activeChannel);
     if (activeSearch) params.append("username", activeSearch);
+    if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `/api/messages?${params.toString()}`;
+    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified
     const response = await fetch(url);
     const newerMessages = await response.json();
 
@@ -261,9 +293,9 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>Chat Moderation Feed</h1>
+        <h1>Idle Clans Chat Log</h1>
         <div className="search-forms-container">
-          <form onSubmit={handleSearchSubmit} className="search-bar">
+          <form onSubmit={handleUsernameSearchSubmit} className="search-bar">
             <input
               type="text"
               placeholder="Search by username..."
@@ -274,12 +306,32 @@ function App() {
             <button type="submit" className="search-btn">
               Search
             </button>
-            {activeSearch && (
+            {(activeSearch || activeMessageSearch) && (
               <button type="button" onClick={clearSearch} className="clear-btn">
                 Clear
               </button>
             )}
           </form>
+
+          {/* New Message Search Form */}
+          <form onSubmit={handleMessageSearchSubmit} className="search-bar">
+            <input
+              type="text"
+              placeholder="Search by message text..."
+              value={messageSearchTerm}
+              onChange={(e) => setMessageSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            <button type="submit" className="search-btn">
+              Search
+            </button>
+            {(activeSearch || activeMessageSearch) && (
+              <button type="button" onClick={clearSearch} className="clear-btn">
+                Clear
+              </button>
+            )}
+          </form>
+
           <form onSubmit={handleTimeSearchSubmit} className="time-search-bar">
             <input
               type="datetime-local"
@@ -345,7 +397,7 @@ function App() {
                 </span>
                 <p className="message-body">{msg.message}</p>
               </div>
-              {activeSearch && (
+              {(activeSearch || activeMessageSearch) && (
                 <div className="message-actions">
                   <button
                     onClick={() =>

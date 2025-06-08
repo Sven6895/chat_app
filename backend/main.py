@@ -34,8 +34,9 @@ def get_channel_names():
 
 @app.get("/messages")
 def get_messages(
-    channel_name: Optional[str] = None, 
+    channel_name: Optional[str] = None,
     username: Optional[str] = None,
+    message_text: Optional[str] = None, # New parameter for message text search
     before_timestamp: Optional[str] = None,
     after_timestamp: Optional[str] = None
 ):
@@ -43,7 +44,7 @@ def get_messages(
     cur = conn.cursor(cursor_factory=RealDictCursor)
 
     query = "SELECT id, channel_name, username, message, created_at FROM chat_logs"
-    
+
     where_clauses = []
     params = []
     order_by = "ORDER BY created_at DESC"
@@ -55,6 +56,10 @@ def get_messages(
     if username:
         where_clauses.append("username ILIKE %s")
         params.append(f"%{username}%")
+
+    if message_text: # New condition for message text search
+        where_clauses.append("message ILIKE %s")
+        params.append(f"%{message_text}%")
 
     if before_timestamp:
         where_clauses.append("created_at < %s")
@@ -78,7 +83,6 @@ def get_messages(
     conn.close()
     return messages
 
-# --- MODIFIED ENDPOINT ---
 @app.get("/messages_around_time")
 def get_messages_around_time(target_timestamp: str, channel_name: Optional[str] = None):
     """
@@ -91,7 +95,7 @@ def get_messages_around_time(target_timestamp: str, channel_name: Optional[str] 
     # Base queries for the two halves of the search
     query_before = "SELECT * FROM chat_logs WHERE created_at <= %s"
     query_after = "SELECT * FROM chat_logs WHERE created_at > %s"
-    
+
     params = [target_timestamp]
 
     # Dynamically add channel filter if provided
@@ -112,7 +116,7 @@ def get_messages_around_time(target_timestamp: str, channel_name: Optional[str] 
     ) AS messages_around_time
     ORDER BY created_at ASC;
     """
-    
+
     cur.execute(full_query, tuple(final_params))
     messages = cur.fetchall()
 

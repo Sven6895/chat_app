@@ -1,8 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo } from "react";
 import "./App.css";
 
-// Remove or comment out the API_BASE_URL constant
-// const API_BASE_URL = "http://localhost:8000";
+// No API_BASE_URL constant needed as all API calls will be prefixed with /api/
 
 function App() {
   const [messages, setMessages] = useState(new Map());
@@ -30,7 +29,7 @@ function App() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await fetch(`/channels`); // Reverted to relative path
+        const response = await fetch(`/api/channels`); // MODIFIED: Added /api/ prefix
         if (!response.ok) throw new Error("Could not fetch channels");
         const data = await response.json();
 
@@ -47,7 +46,7 @@ function App() {
           const indexA = desiredOrder.indexOf(a);
           const indexB = desiredOrder.indexOf(b);
           const effectiveIndexA = indexA === -1 ? Infinity : indexA;
-          const effectiveIndexB = indexB === -1 ? Infinity : effectiveIndexB; // Corrected effectiveIndexB
+          const effectiveIndexB = indexB === -1 ? Infinity : indexB;
           if (effectiveIndexA !== effectiveIndexB) {
             return effectiveIndexA - effectiveIndexB;
           }
@@ -77,7 +76,7 @@ function App() {
         params.append("message_text", activeMessageSearch);
 
       const queryString = params.toString();
-      let url = `/messages${queryString ? `?${queryString}` : ""}`; // Reverted to relative path
+      let url = `/api/messages${queryString ? `?${queryString}` : ""}`; // MODIFIED: Added /api/ prefix
 
       try {
         const response = await fetch(url);
@@ -178,7 +177,7 @@ function App() {
       params.append("target_timestamp", timestamp);
       params.append("channel_name", channelName);
 
-      const url = `/messages_around_time?${params.toString()}`; // Reverted to relative path
+      const url = `/api/messages_around_time?${params.toString()}`; // MODIFIED: Added /api/ prefix
       const response = await fetch(url);
       const data = await response.json();
       setMessages(new Map(data.map((msg) => [msg.id, msg])));
@@ -215,7 +214,7 @@ function App() {
         params.append("channel_name", activeChannel);
       }
 
-      const url = `/messages_around_time?${params.toString()}`; // Reverted to relative path
+      const url = `/api/messages_around_time?${params.toString()}`; // MODIFIED: Added /api/ prefix
 
       const response = await fetch(url);
       if (!response.ok)
@@ -224,6 +223,7 @@ function App() {
       setMessages(new Map(data.map((msg) => [msg.id, msg])));
       document.querySelector(".chat-log")?.scrollTo(0, 0);
     } catch (e) {
+      /* eslint-disable-next-line no-dupe-keys */
       setError("Failed to load messages for this time.");
     } finally {
       setIsLoading(false);
@@ -252,7 +252,7 @@ function App() {
     if (activeSearch) params.append("username", activeSearch);
     if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `/messages?${params.toString()}`; // Reverted to relative path
+    const url = `/api/messages?${params.toString()}`; // MODIFIED: Added /api/ prefix
     const response = await fetch(url);
     const olderMessages = await response.json();
 
@@ -276,7 +276,7 @@ function App() {
     if (activeSearch) params.append("username", activeSearch);
     if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `/messages?${params.toString()}`; // Reverted to relative path
+    const url = `/api/messages?${params.toString()}`; // MODIFIED: Added /api/ prefix
     const response = await fetch(url);
     const newerMessages = await response.json();
 

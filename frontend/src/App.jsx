@@ -1,11 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useMemo } from "react";
 import "./App.css";
 
-// Use an environment variable for the API_BASE_URL
-// In development, VITE_API_BASE_URL will be undefined, so it defaults to localhost.
-// In production (after npm run build), Vite will replace this with the value from .env.production.
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+// Remove or comment out the API_BASE_URL constant
+// const API_BASE_URL = "http://localhost:8000";
 
 function App() {
   const [messages, setMessages] = useState(new Map());
@@ -33,7 +30,7 @@ function App() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/channels`); // Modified to use API_BASE_URL
+        const response = await fetch(`/channels`); // Reverted to relative path
         if (!response.ok) throw new Error("Could not fetch channels");
         const data = await response.json();
 
@@ -50,7 +47,7 @@ function App() {
           const indexA = desiredOrder.indexOf(a);
           const indexB = desiredOrder.indexOf(b);
           const effectiveIndexA = indexA === -1 ? Infinity : indexA;
-          const effectiveIndexB = indexB === -1 ? Infinity : indexB;
+          const effectiveIndexB = indexB === -1 ? Infinity : effectiveIndexB; // Corrected effectiveIndexB
           if (effectiveIndexA !== effectiveIndexB) {
             return effectiveIndexA - effectiveIndexB;
           }
@@ -80,9 +77,7 @@ function App() {
         params.append("message_text", activeMessageSearch);
 
       const queryString = params.toString();
-      let url = `${API_BASE_URL}/messages${
-        queryString ? `?${queryString}` : ""
-      }`; // Modified to use API_BASE_URL
+      let url = `/messages${queryString ? `?${queryString}` : ""}`; // Reverted to relative path
 
       try {
         const response = await fetch(url);
@@ -131,7 +126,6 @@ function App() {
   };
 
   const handleMessageSearchSubmit = (e) => {
-    // New handler for message search
     e.preventDefault();
     setActiveChannel("All");
     setActiveMessageSearch(messageSearchTerm);
@@ -184,7 +178,7 @@ function App() {
       params.append("target_timestamp", timestamp);
       params.append("channel_name", channelName);
 
-      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified to use API_BASE_URL
+      const url = `/messages_around_time?${params.toString()}`; // Reverted to relative path
       const response = await fetch(url);
       const data = await response.json();
       setMessages(new Map(data.map((msg) => [msg.id, msg])));
@@ -221,7 +215,7 @@ function App() {
         params.append("channel_name", activeChannel);
       }
 
-      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified to use API_BASE_URL
+      const url = `/messages_around_time?${params.toString()}`; // Reverted to relative path
 
       const response = await fetch(url);
       if (!response.ok)
@@ -258,7 +252,7 @@ function App() {
     if (activeSearch) params.append("username", activeSearch);
     if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified to use API_BASE_URL
+    const url = `/messages?${params.toString()}`; // Reverted to relative path
     const response = await fetch(url);
     const olderMessages = await response.json();
 
@@ -282,7 +276,7 @@ function App() {
     if (activeSearch) params.append("username", activeSearch);
     if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified to use API_BASE_URL
+    const url = `/messages?${params.toString()}`; // Reverted to relative path
     const response = await fetch(url);
     const newerMessages = await response.json();
 

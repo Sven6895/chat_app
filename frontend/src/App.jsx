@@ -22,15 +22,13 @@ function App() {
     );
   }, [messages]);
 
-  // --- MODIFIED: This useEffect now correctly includes your custom sorting logic ---
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/channels");
+        const response = await fetch("/api/channels");
         if (!response.ok) throw new Error("Could not fetch channels");
-        const fetchedChannels = await response.json();
+        const data = await response.json();
 
-        // --- RESTORED CUSTOM SORTING LOGIC ---
         const desiredOrder = [
           "General",
           "Help",
@@ -40,7 +38,7 @@ function App() {
           "Raids-LFG",
         ];
 
-        fetchedChannels.sort((a, b) => {
+        data.sort((a, b) => {
           const indexA = desiredOrder.indexOf(a);
           const indexB = desiredOrder.indexOf(b);
           const effectiveIndexA = indexA === -1 ? Infinity : indexA;
@@ -50,9 +48,8 @@ function App() {
           }
           return a.localeCompare(b);
         });
-        // --- END OF SORTING LOGIC ---
 
-        setChannels(["All", ...fetchedChannels]);
+        setChannels(["All", ...data]);
       } catch (e) {
         console.error(e);
       }
@@ -72,7 +69,8 @@ function App() {
       if (activeChannel !== "All") params.append("channel_name", activeChannel);
       if (activeSearch) params.append("username", activeSearch);
 
-      const url = `http://127.0.0.1:8000/messages?${params.toString()}`;
+      const queryString = params.toString();
+      let url = `/api/messages${queryString ? `?${queryString}` : ""}`;
 
       try {
         const response = await fetch(url);
@@ -152,7 +150,7 @@ function App() {
       params.append("target_timestamp", timestamp);
       params.append("channel_name", channelName);
 
-      const url = `http://127.0.0.1:8000/messages_around_time?${params.toString()}`;
+      const url = `/api/messages_around_time?${params.toString()}`;
       const response = await fetch(url);
       const data = await response.json();
       setMessages(new Map(data.map((msg) => [msg.id, msg])));
@@ -187,7 +185,8 @@ function App() {
         params.append("channel_name", activeChannel);
       }
 
-      const url = `http://127.0.0.1:8000/messages_around_time?${params.toString()}`;
+      // --- MODIFIED URL ---
+      const url = `/api/messages_around_time?${params.toString()}`;
 
       const response = await fetch(url);
       if (!response.ok)
@@ -223,7 +222,8 @@ function App() {
     if (activeChannel !== "All") params.append("channel_name", activeChannel);
     if (activeSearch) params.append("username", activeSearch);
 
-    const url = `http://127.0.0.1:8000/messages?${params.toString()}`;
+    // --- MODIFIED URL ---
+    const url = `/api/messages?${params.toString()}`;
     const response = await fetch(url);
     const olderMessages = await response.json();
 
@@ -246,7 +246,7 @@ function App() {
     if (activeChannel !== "All") params.append("channel_name", activeChannel);
     if (activeSearch) params.append("username", activeSearch);
 
-    const url = `http://127.0.0.1:8000/messages?${params.toString()}`;
+    const url = `/api/messages?${params.toString()}`;
     const response = await fetch(url);
     const newerMessages = await response.json();
 

@@ -1,8 +1,11 @@
 import { useState, useEffect, useLayoutEffect, useMemo } from "react";
 import "./App.css";
 
-// Define the base URL for your FastAPI backend
-const API_BASE_URL = "http://localhost:8000"; // Changed to an absolute URL
+// Use an environment variable for the API_BASE_URL
+// In development, VITE_API_BASE_URL will be undefined, so it defaults to localhost.
+// In production (after npm run build), Vite will replace this with the value from .env.production.
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 function App() {
   const [messages, setMessages] = useState(new Map());
@@ -30,7 +33,7 @@ function App() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/channels`); // Modified
+        const response = await fetch(`${API_BASE_URL}/channels`); // Modified to use API_BASE_URL
         if (!response.ok) throw new Error("Could not fetch channels");
         const data = await response.json();
 
@@ -79,7 +82,7 @@ function App() {
       const queryString = params.toString();
       let url = `${API_BASE_URL}/messages${
         queryString ? `?${queryString}` : ""
-      }`; // Modified
+      }`; // Modified to use API_BASE_URL
 
       try {
         const response = await fetch(url);
@@ -123,15 +126,16 @@ function App() {
     e.preventDefault();
     setActiveChannel("All");
     setActiveSearch(searchTerm);
-    setActiveMessageSearch("");
+    setActiveMessageSearch(""); // Clear message search when performing username search
     setMessageSearchTerm("");
   };
 
   const handleMessageSearchSubmit = (e) => {
+    // New handler for message search
     e.preventDefault();
     setActiveChannel("All");
     setActiveMessageSearch(messageSearchTerm);
-    setActiveSearch("");
+    setActiveSearch(""); // Clear username search when performing message search
     setSearchTerm("");
   };
 
@@ -158,9 +162,9 @@ function App() {
   const handleUsernameClick = (username) => {
     setSearchTerm(username);
     setActiveSearch(username);
-    setActiveMessageSearch("");
+    setActiveMessageSearch(""); // Clear message search when clicking username
     setMessageSearchTerm("");
-    setActiveChannel("All");
+    setActiveChannel("All"); // Reset channel to "All" for user search context
   };
 
   const handleJumpToTime = async (timestamp, messageId, channelName) => {
@@ -180,7 +184,7 @@ function App() {
       params.append("target_timestamp", timestamp);
       params.append("channel_name", channelName);
 
-      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified
+      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified to use API_BASE_URL
       const response = await fetch(url);
       const data = await response.json();
       setMessages(new Map(data.map((msg) => [msg.id, msg])));
@@ -217,7 +221,7 @@ function App() {
         params.append("channel_name", activeChannel);
       }
 
-      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified
+      const url = `${API_BASE_URL}/messages_around_time?${params.toString()}`; // Modified to use API_BASE_URL
 
       const response = await fetch(url);
       if (!response.ok)
@@ -254,7 +258,7 @@ function App() {
     if (activeSearch) params.append("username", activeSearch);
     if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified
+    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified to use API_BASE_URL
     const response = await fetch(url);
     const olderMessages = await response.json();
 
@@ -278,7 +282,7 @@ function App() {
     if (activeSearch) params.append("username", activeSearch);
     if (activeMessageSearch) params.append("message_text", activeMessageSearch);
 
-    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified
+    const url = `${API_BASE_URL}/messages?${params.toString()}`; // Modified to use API_BASE_URL
     const response = await fetch(url);
     const newerMessages = await response.json();
 

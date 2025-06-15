@@ -17,7 +17,8 @@
 
 body {
   margin: 0;
-  font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
+  font-family: "Signika Negative", "Menlo", "Monaco", "Consolas", "Courier New",
+    monospace;
   background-color: var(--bg-ic-dark-blue);
   color: var(--ic-text-primary);
   font-size: 14px;
@@ -48,9 +49,9 @@ body {
 .clear-btn,
 .jump-btn,
 .load-more-btn {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Signika Negative", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
 }
 
 .app-header {
